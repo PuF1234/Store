@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    internal interface IBicycleRepos
+    public interface IBicycleRepos
     {
+        Bicycle[] GetAllByTitle(string titlePart);
     }
 }
