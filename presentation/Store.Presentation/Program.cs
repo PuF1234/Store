@@ -10,6 +10,7 @@ internal class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddSingleton<IBicycleRepos, BicycleRepository>();
+        builder.Services.AddSingleton<BicycleService>();
 
         var app = builder.Build();
 
