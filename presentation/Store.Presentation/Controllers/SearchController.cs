@@ -4,15 +4,15 @@ namespace Store.Presentation.Controllers
 {
     public class SearchController : Controller
     {
-        private readonly IBicycleRepos bicycleRepos;
-        public SearchController(IBicycleRepos bicycleRepos)
+        private readonly BicycleService bicycleService;
+        public SearchController(BicycleService bicycleService)
         {
-            this.bicycleRepos = bicycleRepos;
+            this.bicycleService = bicycleService;
         }
 
         public IActionResult Index(string query)
         {
-            var bicycles = bicycleRepos.GetAllByTitle(query);
+            var bicycles = bicycleService.GetAllByQuery(query);
 
             return View(bicycles);
         }
