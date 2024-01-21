@@ -14,7 +14,7 @@ namespace Store.Presentation.Controllers
         {
             var bicycles = bicycleService.GetAllByQuery(query);
 
-            return View(bicycles);
+            return View("Index",bicycles);
         }
     }
 }

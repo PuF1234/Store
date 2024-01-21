@@ -13,12 +13,18 @@ namespace Store
 
         public string Producer {  get; }
 
-        public Bicycle(int id, string title, string serial_number, string producer)
+        public string Description { get; }
+
+        public decimal Price { get; }
+
+        public Bicycle(int id, string title, string serial_number, string producer, string description, decimal price)
         {
             ID = id;
             Title = title;
             Serial_number = serial_number;
             Producer = producer;
+            Description = description;
+            Price = price;
 
         }
 
