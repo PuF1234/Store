@@ -14,10 +14,10 @@ namespace Store.Tests
         {
             var bicycleReposStub = new Mock<IBicycleRepos>();
             bicycleReposStub.Setup(x => x.GetAllBySerialNumber(It.IsAny<string>()))
-                            .Returns(new [] {new Bicycle (1, "", "", "")});
+                            .Returns(new [] {new Bicycle (1, "", "", "", "", 0m)});
 
             bicycleReposStub.Setup(x => x.GetAllByTitleOrProducer(It.IsAny<string>()))
-                            .Returns(new[] { new Bicycle(2, "", "", "") });
+                            .Returns(new[] { new Bicycle(2, "", "", "", "", 0m) });
 
             var bicycleService = new BicycleService(bicycleReposStub.Object);
 
@@ -33,10 +33,10 @@ namespace Store.Tests
         {
             var bicycleReposStub = new Mock<IBicycleRepos>();
             bicycleReposStub.Setup(x => x.GetAllBySerialNumber(It.IsAny<string>()))
-                            .Returns(new[] { new Bicycle(1, "", "", "") });
+                            .Returns(new[] { new Bicycle(1, "", "", "", "", 0m) });
 
             bicycleReposStub.Setup(x => x.GetAllByTitleOrProducer(It.IsAny<string>()))
-                            .Returns(new[] { new Bicycle(2, "", "", "") });
+                            .Returns(new[] { new Bicycle(2, "", "", "", "", 0m) });
 
             var bicycleService = new BicycleService(bicycleReposStub.Object);
 

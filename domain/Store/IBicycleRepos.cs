@@ -9,6 +9,9 @@ namespace Store
     public interface IBicycleRepos
     {
         Bicycle[] GetAllBySerialNumber(string serialNumber);
+
         Bicycle[] GetAllByTitleOrProducer(string TitleOrProducer);
+
+        Bicycle GetById(int id);
     }
 }
