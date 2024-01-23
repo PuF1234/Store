@@ -11,6 +11,13 @@ internal class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddSingleton<IBicycleRepos, BicycleRepository>();
         builder.Services.AddSingleton<BicycleService>();
+        builder.Services.AddDistributedMemoryCache();
+        builder.Services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(20);
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential   = true;
+        });
 
         var app = builder.Build();
 
@@ -28,6 +35,8 @@ internal class Program
         app.UseRouting();
 
         app.UseAuthorization();
+
+        app.UseSession();
 
         app.MapControllerRoute(
             name: "default",
