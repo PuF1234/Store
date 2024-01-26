@@ -12,7 +12,7 @@ namespace Store.Presentation.Controllers
         }
         public IActionResult Index(int id)
         {
-            Bicycle bicycle = bicycleRepos.GetById(id);
+            Bicycle bicycle = bicycleRepos.GetByIds(id);
 
             return View(bicycle);
         }

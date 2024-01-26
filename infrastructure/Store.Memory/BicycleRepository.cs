@@ -18,6 +18,15 @@ namespace Store.Memory
                 249.00m),
         };
 
+        public Bicycle[] GetAllByIds(IEnumerable<int> bicycleIds)
+        {
+            var foundBicycles = from bicycle in bicycles
+                                join bicycleId in bicycleIds on bicycle.ID equals bicycleId
+                                select bicycle;
+
+            return foundBicycles.ToArray();
+        }
+
         public Bicycle[] GetAllBySerialNumber(string serialNumber)
         {
             return bicycles.Where(bicycle => bicycle.Serial_number == serialNumber)
@@ -36,7 +45,7 @@ namespace Store.Memory
                 .ToArray();
         }
 
-        public Bicycle GetById(int id)
+        public Bicycle GetByIds(int id)
         {
             return bicycles.Single(bicycle => bicycle.ID == id);
         }

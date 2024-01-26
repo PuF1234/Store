@@ -8,10 +8,11 @@ namespace Store
 {
     public interface IBicycleRepos
     {
+        Bicycle[] GetAllByIds(IEnumerable<int> bicycleIds);
         Bicycle[] GetAllBySerialNumber(string serialNumber);
 
         Bicycle[] GetAllByTitleOrProducer(string TitleOrProducer);
 
-        Bicycle GetById(int id);
+        Bicycle GetByIds(int id);
     }
 }
