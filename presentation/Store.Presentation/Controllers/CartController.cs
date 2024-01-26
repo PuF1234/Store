@@ -8,27 +8,38 @@ namespace Store.Presentation.Controllers
     {
         private readonly IBicycleRepos bicycleRepos;
 
-        public CartController(IBicycleRepos bicycleRepos)
+        private readonly IOrderRepository orderRepository;
+
+        public CartController(IBicycleRepos bicycleRepos, 
+                              IOrderRepository orderRepository)
         {
             this.bicycleRepos = bicycleRepos;
+            this.orderRepository = orderRepository;
         }
 
         public IActionResult Add(int id)
-        {
-            var bicycle = bicycleRepos.GetById(id);
+        {          
+
+            Order order;
             Cart cart;
 
-            if (!HttpContext.Session.TryGetCart(out cart))
-                cart = new Cart();
-            
-            if (cart.Items.ContainsKey(id))           
-                cart.Items[id]++;
-              
-            else            
-                cart.Items[id] = 1;
+            if (HttpContext.Session.TryGetCart(out cart))
+            {
+                order = orderRepository.GetById(cart.OrderId);
+            }
 
-            cart.Amount += bicycle.Price;
+            else
+            {
+                order = orderRepository.Create();
+                cart = new Cart(order.Id);
+            }
 
+            var bicycle = bicycleRepos.GetById(id);
+            order.AddItem(bicycle, 1);
+            orderRepository.Update(order);
+
+            cart.TotalCount = order.TotalCount;
+            cart.TotalPrice = order.TotalPrice;
             HttpContext.Session.Set(cart);
 
             return RedirectToAction("Index", "Bicycle", new {id});

@@ -14,15 +14,10 @@ namespace Store.Presentation
 
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
-            { 
-                writer.Write (value.Items.Count);
-
-                foreach (var item in value.Items)
-                {
-                    writer.Write(item.Key);
-                    writer.Write(item.Value);
-                }
-                writer.Write(value.Amount);
+            {
+                writer.Write(value.OrderId);
+                writer.Write(value.TotalCount);
+                writer.Write(value.TotalPrice);            
 
                 session.Set(key, stream.ToArray()); 
             }
@@ -32,20 +27,17 @@ namespace Store.Presentation
             if(session.TryGetValue(key, out byte[] buffer))
             {
                 using (var stream = new MemoryStream (buffer))
-                using (var reader = new BinaryReader (stream, Encoding.UTF8, true)) 
+                using (var reader = new BinaryReader (stream, Encoding.UTF8, true))
                 {
-                    value = new Cart();
+                    var orderId = reader.ReadInt32();
+                    var totalCount = reader.ReadInt32();
+                    var totalPrice = reader.ReadDecimal();
 
-                    var length = reader.ReadInt32();
-                    for (int i = 0; i < length; i++)
+                    value = new Cart(orderId)
                     {
-                        var bicycleId = reader.ReadInt32();
-                        var count = reader.ReadInt32();
-
-                        value.Items.Add(bicycleId, count);
-                    }
-
-                    value.Amount = reader.ReadDecimal();
+                        TotalCount = totalCount,
+                        TotalPrice = totalPrice,
+                    };                    
 
                     return true;
                 }
