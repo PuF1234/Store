@@ -1,8 +1,5 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Store.Presentation.Models;
-using System.Linq;
 
 namespace Store.Presentation.Controllers
 {
@@ -82,7 +79,7 @@ namespace Store.Presentation.Controllers
 
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Bicycle", new { id = bicycleId });
+            return RedirectToAction("Index", "Order");
         }
 
         [HttpPost]
@@ -119,7 +116,7 @@ namespace Store.Presentation.Controllers
 
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Bicycle", new { id = bicycleId });
+            return RedirectToAction("Index", "Order");
         }
     } 
 }
