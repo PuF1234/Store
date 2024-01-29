@@ -58,7 +58,7 @@ namespace Store.Presentation.Controllers
             };
         }
 
-        public IActionResult AddItem(int bicycleId, int count)
+        public IActionResult AddItem(int bicycleId, int count = 1)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
@@ -68,7 +68,7 @@ namespace Store.Presentation.Controllers
 
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Bicycle", new { bicycleId });
+            return RedirectToAction("Index", "Bicycle", new { id = bicycleId });
 
 
         }
@@ -82,7 +82,7 @@ namespace Store.Presentation.Controllers
 
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Bicycle", new { bicycleId });
+            return RedirectToAction("Index", "Bicycle", new { id = bicycleId });
         }
 
         [HttpPost]
@@ -111,15 +111,15 @@ namespace Store.Presentation.Controllers
             return (order, cart);
         }       
 
-        public IActionResult RemoveItem(int id)
+        public IActionResult RemoveItem(int bicycleId)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
-            order.RemoveItem(id);
+            order.RemoveItem(bicycleId);
 
             SaveOrderAndCart(order, cart);
 
-            return RedirectToAction("Index", "Bicycle", new { id });
+            return RedirectToAction("Index", "Bicycle", new { id = bicycleId });
         }
     } 
 }
