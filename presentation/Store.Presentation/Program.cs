@@ -11,6 +11,7 @@ internal class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddSingleton<IBicycleRepos, BicycleRepository>();
         builder.Services.AddSingleton<BicycleService>();
+        builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddSession(options =>
         {
