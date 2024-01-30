@@ -14,7 +14,6 @@
             <th scope="col">Title</th>
             <th scope="col">Count</th>
             <th scope="col">Price</th>
-            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
@@ -26,12 +25,6 @@
                 <td>@Model.Items[i].Title</td>
                 <td class="text-right">@Model.Items[i].Count</td>
                 <td class="text-right">@Model.Items[i].Price</td>
-                <td class="text-center">
-                    <form class="form-check-inline" action="@Url.Action("RemoveItem","Order")" method="post">
-                        <input type="hidden" name="bicycleId" value="@Model.Items[i].BicycleId"/>
-                        <button class="btn btn-danger" type="submit">Remove item</button>
-                    </form>
-                </td>
             </tr>
         }
     </tbody>

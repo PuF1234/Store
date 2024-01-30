@@ -1,36 +1,26 @@
-﻿namespace Store
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Store
 {
     public class OrderItem
     {
-        public int BicycleId {  get; }
+        public int BicycleId {  get; set; }
 
-        private int count;
+        public int Count { get; set; }
 
-        public int Count
+        public decimal Price { get; set; }
+
+        public OrderItem(int bicycleId, int count, decimal price) 
         {
-            get { return count; }
-            set 
-            {
-                ThrowIfInvalidCount(value);
-
-                count = value;
-            }
-        }
-
-        public decimal Price { get; }
-
-        public OrderItem(int bicycleId, int count, decimal price)
-        {
-            ThrowIfInvalidCount(count); 
+            if(count <= 0)
+                throw new ArgumentOutOfRangeException("Count must be greather than 0!");
             BicycleId = bicycleId;
             Count = count;
             Price = price;
-        }
-
-        private static void ThrowIfInvalidCount(int count)
-        {
-            if (count <= 0)
-                throw new ArgumentOutOfRangeException("Count must be greather than 0!");
         }
     }
 }

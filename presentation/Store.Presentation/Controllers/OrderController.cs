@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Store.Presentation.Models;
+using System.Linq;
 
 namespace Store.Presentation.Controllers
 {
@@ -55,47 +58,13 @@ namespace Store.Presentation.Controllers
             };
         }
 
-        public IActionResult AddItem(int bicycleId, int count = 1)
-        {
-            (Order order, Cart cart) = GetOrCreateOrderAndCart();
+        public IActionResult AddItem(int id)
+        {          
 
-            var bicycle = bicycleRepos.GetByIds(bicycleId);
-
-            order.AddOrUpdateItem(bicycle, count);
-
-            SaveOrderAndCart(order, cart);
-
-            return RedirectToAction("Index", "Bicycle", new { id = bicycleId });
-
-
-        }
-
-        [HttpPost]
-        public IActionResult UpdateItem(int bicycleId, int count)
-        {
-            (Order order, Cart cart) = GetOrCreateOrderAndCart();
-
-            order.GetItem(bicycleId).Count = count;
-
-            SaveOrderAndCart(order, cart);
-
-            return RedirectToAction("Index", "Order");
-        }
-
-        [HttpPost]
-        private void SaveOrderAndCart(Order order, Cart cart)
-        {
-            orderRepository.Update(order);
-            cart.TotalCount = order.TotalCount;
-            cart.TotalPrice = order.TotalPrice;
-            HttpContext.Session.Set(cart);
-        }
-
-        private (Order order, Cart cart) GetOrCreateOrderAndCart()
-        {
             Order order;
+            Cart cart;
 
-            if (HttpContext.Session.TryGetCart(out Cart cart))
+            if (HttpContext.Session.TryGetCart(out cart))
             {
                 order = orderRepository.GetById(cart.OrderId);
             }
@@ -105,18 +74,16 @@ namespace Store.Presentation.Controllers
                 order = orderRepository.Create();
                 cart = new Cart(order.Id);
             }
-            return (order, cart);
-        }       
 
-        public IActionResult RemoveItem(int bicycleId)
-        {
-            (Order order, Cart cart) = GetOrCreateOrderAndCart();
+            var bicycle = bicycleRepos.GetByIds(id);
+            order.AddItem(bicycle, 1);
+            orderRepository.Update(order);
 
-            order.RemoveItem(bicycleId);
+            cart.TotalCount = order.TotalCount;
+            cart.TotalPrice = order.TotalPrice;
+            HttpContext.Session.Set(cart);
 
-            SaveOrderAndCart(order, cart);
-
-            return RedirectToAction("Index", "Order");
+            return RedirectToAction("Index", "Bicycle", new {id});
         }
-    } 
+    }
 }

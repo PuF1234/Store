@@ -1,4 +1,10 @@
-﻿namespace Store
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Store
 {
     public class Order
     {
@@ -11,9 +17,15 @@
             get { return items; } 
         }
 
-        public int TotalCount => items.Sum(item => item.Count);        
+        public int TotalCount
+        {
+            get { return items.Sum(item => item.Count); }
+        }
 
-        public decimal TotalPrice => items.Sum(item => item.Price * item.Count);        
+        public decimal TotalPrice
+        {
+            get { return items.Sum(item => item.Price * item.Count); }
+        }
 
         public Order(int id, IEnumerable<OrderItem> items)
         {
@@ -25,38 +37,22 @@
             this.items = new List<OrderItem>(items);
         }
 
-        public OrderItem GetItem(int bicycleId)
-        {
-            int index = items.FindIndex(item => item.BicycleId == bicycleId);
-
-            if (index == -1)
-                throw new InvalidOperationException("Item not found!");
-            
-            return items[index];
-        }
-
-        
-        public void AddOrUpdateItem(Bicycle bicycle, int count)
+        public void AddItem(Bicycle bicycle, int count)
         {
             if(bicycle == null)
                 throw new ArgumentNullException(nameof(bicycle));
 
-            int index = items.FindIndex(item => item.BicycleId == bicycle.ID);
+            var item = items.SingleOrDefault(x => x.BicycleId == bicycle.ID);
 
-            if(index == -1)
+            if(item == null)
+            {
                 items.Add(new OrderItem(bicycle.ID, count, bicycle.Price));
+            }
             else
-                items[index].Count += count;
-        }
-        
-        public void RemoveItem(int bicycleId)
-        {            
-            int index = items.FindIndex(item => item.BicycleId == bicycleId);
-
-            if (index == -1)
-                throw new InvalidOperationException("Order doesn't contain specified item.");
-
-            items.RemoveAt(index);
+            {
+                items.Remove(item);
+                items.Add(new OrderItem(bicycle.ID, item.Count + count, bicycle.Price));
+            }
         }
     }
 }
