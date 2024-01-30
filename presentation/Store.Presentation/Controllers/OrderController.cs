@@ -16,6 +16,7 @@ namespace Store.Presentation.Controllers
             this.orderRepository = orderRepository;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             
@@ -55,6 +56,8 @@ namespace Store.Presentation.Controllers
             };
         }
 
+    
+        [HttpPost]             
         public IActionResult AddItem(int bicycleId, int count = 1)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
