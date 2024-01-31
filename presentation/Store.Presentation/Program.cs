@@ -1,5 +1,7 @@
 using Store;
+using Store.Contractors;
 using Store.Memory;
+using Store.Messages;
 
 internal class Program
 {
@@ -12,6 +14,8 @@ internal class Program
         builder.Services.AddSingleton<IBicycleRepos, BicycleRepository>();
         builder.Services.AddSingleton<BicycleService>();
         builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
+        builder.Services.AddSingleton<INotificationService, DebugNotificationService>();
+        builder.Services.AddSingleton<IDeliveryService, PostomateDeliveryService>();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddSession(options =>
         {

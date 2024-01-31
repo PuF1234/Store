@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Store.Contractors;
+using Store.Messages;
 using Store.Presentation.Models;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace Store.Presentation.Controllers
 {
@@ -9,11 +13,19 @@ namespace Store.Presentation.Controllers
 
         private readonly IOrderRepository orderRepository;
 
+        private readonly INotificationService notificationService;
+
+        private readonly IEnumerable<IDeliveryService> deliveryServices;
+
         public OrderController(IBicycleRepos bicycleRepos, 
-                              IOrderRepository orderRepository)
+                              IOrderRepository orderRepository,
+                              IEnumerable<IDeliveryService> deliveryServices,    
+                              INotificationService notificationService)
         {
             this.bicycleRepos = bicycleRepos;
             this.orderRepository = orderRepository;
+            this.deliveryServices = deliveryServices;
+            this.notificationService = notificationService;
         }
 
         [HttpGet]
@@ -109,8 +121,9 @@ namespace Store.Presentation.Controllers
                 cart = new Cart(order.Id);
             }
             return (order, cart);
-        }       
+        }
 
+        [HttpPost]
         public IActionResult RemoveItem(int bicycleId)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
@@ -120,6 +133,116 @@ namespace Store.Presentation.Controllers
             SaveOrderAndCart(order, cart);
 
             return RedirectToAction("Index", "Order");
+        }        
+
+        [HttpPost]
+        public IActionResult SendConfirmationCode(int id,  string cellPhone)
+        {
+            var order = orderRepository.GetById(id);
+            var model = Map(order); 
+
+            if(!IsValidCellphone(cellPhone))
+            {
+                model.Errors["cellPhone"] = "Your number does not match proper format +12345678901";
+                return View("Index", model);
+            }
+
+            int code = 1111;
+
+            HttpContext.Session.SetInt32(cellPhone, code);
+            notificationService.SendConfirmationCode(cellPhone, code);
+
+            return View("Confirmation",
+                        new ConfirmationModel
+                        {
+                            OrderId = id,
+                            Cellphone = cellPhone,
+
+                        });
+
+        }
+
+        private bool IsValidCellphone(string cellPhone)
+        {
+            if(cellPhone == null)
+                return false;
+
+            cellPhone = cellPhone.Replace(" ", "")
+                                 .Replace("-", "");
+
+            return Regex.IsMatch(cellPhone, @"^\+?\d{11}$");
+        }
+
+        [HttpPost]
+        public IActionResult Confirmate(int id, string cellPhone, int code)
+        {
+            int? storedCode = HttpContext.Session.GetInt32(cellPhone);
+            if (storedCode == null)
+            {
+                return View("Confirmation",
+                            new ConfirmationModel
+                            {
+                                OrderId = id,
+                                Cellphone = cellPhone,
+                                Errors = new Dictionary<string, string>
+                                {
+                                    {"code", "Empty code, try again to send" }
+                                },
+                            }); ;
+            }
+
+            if (storedCode != code)
+            {
+                return View("Confirmation",
+                            new ConfirmationModel
+                            {
+                                OrderId = id,
+                                Cellphone = cellPhone,
+                                Errors = new Dictionary<string, string>
+                                {
+                                    {"code", "Is diffrent than sended" }
+                                },
+                            }); ;
+            }
+
+            //todo: save cellPhone  
+
+            HttpContext.Session.Remove(cellPhone);
+
+            var model = new DeliveryModel
+            {
+                OrderId = id,
+                Methods = deliveryServices.ToDictionary(service => service.UniqueCode,
+                                                     service => service.Title)
+            };
+
+            return View("DeliveryMethod", model);
+        }
+
+        [HttpPost]
+        public IActionResult StartDelivery(int id, string uniqueCode)
+        {
+            var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
+            var order = orderRepository.GetById(id);
+
+            var form = deliveryService.CreateForm(order);
+
+            return View("DeliveryStep", form);
+        }
+
+        [HttpPost]
+        public IActionResult NextDelivery(int id, string uniqueCode, int step, Dictionary<string, string> values) 
+        {
+            var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
+
+            var form = deliveryService.MoveNext(id, step, values);
+
+            if (form.IsFinal)
+            {
+                return null;
+            }
+
+            return View("DeliveryStep", form);
         }
     } 
 }
