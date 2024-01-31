@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Store.Messages;
 using Store.Presentation.Models;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace Store.Presentation.Controllers
 {
@@ -9,11 +12,15 @@ namespace Store.Presentation.Controllers
 
         private readonly IOrderRepository orderRepository;
 
+        private readonly INotificationService notificationService;
+
         public OrderController(IBicycleRepos bicycleRepos, 
-                              IOrderRepository orderRepository)
+                              IOrderRepository orderRepository,
+                              INotificationService notificationService)
         {
             this.bicycleRepos = bicycleRepos;
             this.orderRepository = orderRepository;
+            this.notificationService = notificationService;
         }
 
         [HttpGet]
@@ -109,8 +116,9 @@ namespace Store.Presentation.Controllers
                 cart = new Cart(order.Id);
             }
             return (order, cart);
-        }       
+        }
 
+        [HttpPost]
         public IActionResult RemoveItem(int bicycleId)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
@@ -120,6 +128,87 @@ namespace Store.Presentation.Controllers
             SaveOrderAndCart(order, cart);
 
             return RedirectToAction("Index", "Order");
+        }
+
+        /*[HttpPost]
+        public IActionResult ClearCart()
+        {
+            (Order order, Cart cart) = GetOrCreateOrderAndCart();            
+
+            return RedirectToAction("Index", "Home");
+        }*/
+
+        [HttpPost]
+        public IActionResult SendConfirmationCode(int id,  string cellPhone)
+        {
+            var order = orderRepository.GetById(id);
+            var model = Map(order); 
+
+            if(!IsValidCellphone(cellPhone))
+            {
+                model.Errors["cellPhone"] = "Your number does not match proper format +12345678901";
+                return View("Index", model);
+            }
+
+            int code = 1111;
+
+            HttpContext.Session.SetInt32(cellPhone, code);
+            notificationService.SendConfirmationCode(cellPhone, code);
+
+            return View("Confirmation",
+                        new ConfirmationModel
+                        {
+                            OrderId = id,
+                            Cellphone = cellPhone,
+
+                        });
+
+        }
+
+        private bool IsValidCellphone(string cellPhone)
+        {
+            if(cellPhone == null)
+                return false;
+
+            cellPhone = cellPhone.Replace(" ", "")
+                                 .Replace("-", "");
+
+            return Regex.IsMatch(cellPhone, @"^\+?\d{11}$");
+        }
+
+        [HttpPost]
+        public IActionResult StartDelivery(int id, string cellPhone, int code)
+        {
+            int? storedCode = HttpContext.Session.GetInt32(cellPhone);
+            if (storedCode == null)
+            {
+                return View("Confirmation",
+                            new ConfirmationModel
+                            {
+                                OrderId = id,
+                                Cellphone = cellPhone,
+                                Errors = new Dictionary<string, string>
+                                {
+                                    {"code", "Empty code, try again to send" }
+                                },
+                            }); ;
+            }
+
+            if (storedCode != code)
+            {
+                return View("Confirmation",
+                            new ConfirmationModel
+                            {
+                                OrderId = id,
+                                Cellphone = cellPhone,
+                                Errors = new Dictionary<string, string>
+                                {
+                                    {"code", "Is diffrent than sended" }
+                                },
+                            }); ;
+            }
+
+            return View();
         }
     } 
 }
