@@ -16,6 +16,7 @@ internal class Program
         builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
         builder.Services.AddSingleton<INotificationService, DebugNotificationService>();
         builder.Services.AddSingleton<IDeliveryService, PostomateDeliveryService>();
+        builder.Services.AddSingleton<IPaymentService, CashPaymentService>();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddSession(options =>
         {

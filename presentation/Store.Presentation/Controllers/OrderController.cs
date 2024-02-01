@@ -2,7 +2,6 @@
 using Store.Contractors;
 using Store.Messages;
 using Store.Presentation.Models;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Store.Presentation.Controllers
@@ -10,21 +9,21 @@ namespace Store.Presentation.Controllers
     public class OrderController : Controller
     {
         private readonly IBicycleRepos bicycleRepos;
-
         private readonly IOrderRepository orderRepository;
-
         private readonly INotificationService notificationService;
-
         private readonly IEnumerable<IDeliveryService> deliveryServices;
+        private readonly IEnumerable<IPaymentService> paymentServices;
 
         public OrderController(IBicycleRepos bicycleRepos, 
                               IOrderRepository orderRepository,
                               IEnumerable<IDeliveryService> deliveryServices,    
+                              IEnumerable<IPaymentService> paymentServices,
                               INotificationService notificationService)
         {
             this.bicycleRepos = bicycleRepos;
             this.orderRepository = orderRepository;
             this.deliveryServices = deliveryServices;
+            this.paymentServices = paymentServices;
             this.notificationService = notificationService;
         }
 
@@ -147,7 +146,7 @@ namespace Store.Presentation.Controllers
                 return View("Index", model);
             }
 
-            int code = 1111;
+            int code = 1111; // random.Next(1000, 10000);
 
             HttpContext.Session.SetInt32(cellPhone, code);
             notificationService.SendConfirmationCode(cellPhone, code);
@@ -205,7 +204,9 @@ namespace Store.Presentation.Controllers
                             }); ;
             }
 
-            //todo: save cellPhone  
+            var order = orderRepository.GetById(id);
+            order.CellPhone = cellPhone;
+            orderRepository.Update(order);
 
             HttpContext.Session.Remove(cellPhone);
 
@@ -213,7 +214,7 @@ namespace Store.Presentation.Controllers
             {
                 OrderId = id,
                 Methods = deliveryServices.ToDictionary(service => service.UniqueCode,
-                                                     service => service.Title)
+                                                        service => service.Title)
             };
 
             return View("DeliveryMethod", model);
@@ -235,14 +236,56 @@ namespace Store.Presentation.Controllers
         {
             var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
 
-            var form = deliveryService.MoveNext(id, step, values);
+            var form = deliveryService.MoveNextForm(id, step, values);
 
             if (form.IsFinal)
             {
-                return null;
+                var order = orderRepository.GetById(id);
+                order.Delivery = deliveryService.GetDelivery(form);
+                orderRepository.Update(order);
+
+                var model = new DeliveryModel
+                {
+                    OrderId = id,
+                    Methods = paymentServices.ToDictionary(service => service.UniqueCode,
+                                                           service => service.Title)
+                };
+
+                return View("PaymentMethod", model);
             }
 
             return View("DeliveryStep", form);
+        }
+
+        [HttpPost]
+        public IActionResult StartPayment(int id, string uniqueCode)
+        {
+            var paymentService = paymentServices.Single(service => service.UniqueCode == uniqueCode);
+            var order = orderRepository.GetById(id);
+
+            var form = paymentService.CreateForm(order);
+
+            return View("PaymentStep", form);
+        }
+
+        [HttpPost]
+        public IActionResult NextPayment(int id, string uniqueCode, int step, Dictionary<string, string> values)
+        {
+            var paymentService = paymentServices.Single(service => service.UniqueCode == uniqueCode);
+
+            var form = paymentService.MoveNextForm(id, step, values);
+
+            if (form.IsFinal)
+            {
+                var order = orderRepository.GetById(id);
+                order.Payment = paymentService.GetPayment(form);
+                orderRepository.Update(order);
+               
+
+                return View("Finish");
+            }
+
+            return View("PaymentStep", form);   
         }
     } 
 }
