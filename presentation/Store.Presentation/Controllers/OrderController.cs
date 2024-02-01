@@ -68,8 +68,7 @@ namespace Store.Presentation.Controllers
             };
         }
 
-    
-        [HttpPost]             
+        [HttpPost]
         public IActionResult AddItem(int bicycleId, int count = 1)
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
