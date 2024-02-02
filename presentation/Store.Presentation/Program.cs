@@ -2,6 +2,8 @@ using Store;
 using Store.Contractors;
 using Store.Memory;
 using Store.Messages;
+using Store.PayPalPayment;
+using Store.Web.Contractors;
 
 internal class Program
 {
@@ -16,6 +18,9 @@ internal class Program
         builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
         builder.Services.AddSingleton<INotificationService, DebugNotificationService>();
         builder.Services.AddSingleton<IDeliveryService, PostomateDeliveryService>();
+        builder.Services.AddSingleton<IPaymentService, CashPaymentService>();
+        builder.Services.AddSingleton<IPaymentService, PayPalPaymentService>();
+        builder.Services.AddSingleton<IWebContractorService, PayPalPaymentService>();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddSession(options =>
         {
@@ -46,6 +51,10 @@ internal class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
+        
+        app.MapAreaControllerRoute(name: "PayPal",
+                areaName: "PayPal",
+                pattern: "PayPal/{controller=Home}/{action=Index}/{id?}");        
 
         app.Run();
     }
