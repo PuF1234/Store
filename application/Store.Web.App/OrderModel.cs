@@ -1,4 +1,4 @@
-﻿namespace Store.Web.Models
+﻿namespace Store.Web.App
 {
     public class OrderModel
     {
@@ -10,7 +10,7 @@
 
         public decimal TotalPrice { get; set; }
 
-        public string Cellphone { get; set; }
+        public string CellPhone { get; set; }
 
         public string DeliveryDescription { get; set; }
 

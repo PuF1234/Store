@@ -2,10 +2,8 @@
 using Store.Contractors;
 using Store.Messages;
 using Store.Presentation.Models;
-using Store.Web;
 using Store.Web.App;
 using Store.Web.Contractors;
-using Store.Web.Models;
 using System.Text.RegularExpressions;
 
 namespace Store.Presentation.Controllers
@@ -221,7 +219,7 @@ namespace Store.Presentation.Controllers
             var model = new DeliveryModel
             {
                 OrderId = id,
-                Methods = deliveryServices.ToDictionary(service => service.UniqueCode,
+                Methods = deliveryServices.ToDictionary(service => service.Name,
                                                         service => service.Title)
             };
 
@@ -231,10 +229,10 @@ namespace Store.Presentation.Controllers
         [HttpPost]
         public IActionResult StartDelivery(int id, string uniqueCode)
         {
-            var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
+            var deliveryService = deliveryServices.Single(service => service.Name == uniqueCode);
             var order = orderRepository.GetById(id);
 
-            var form = deliveryService.CreateForm(order);
+            var form = deliveryService.FirstForm(order);
 
             return View("DeliveryStep", form);
         }
@@ -242,9 +240,9 @@ namespace Store.Presentation.Controllers
         [HttpPost]
         public IActionResult NextDelivery(int id, string uniqueCode, int step, Dictionary<string, string> values) 
         {
-            var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
+            var deliveryService = deliveryServices.Single(service => service.Name == uniqueCode);
 
-            var form = deliveryService.MoveNextForm(id, step, values);
+            var form = deliveryService.NextForm(id, step, values);
 
             if (form.IsFinal)
             {
@@ -255,7 +253,7 @@ namespace Store.Presentation.Controllers
                 var model = new DeliveryModel
                 {
                     OrderId = id,
-                    Methods = paymentServices.ToDictionary(service => service.UniqueCode,
+                    Methods = paymentServices.ToDictionary(service => service.Name,
                                                            service => service.Title)
                 };
 
@@ -268,12 +266,12 @@ namespace Store.Presentation.Controllers
         [HttpPost]
         public IActionResult StartPayment(int id, string uniqueCode)
         {
-            var paymentService = paymentServices.Single(service => service.UniqueCode == uniqueCode);
+            var paymentService = paymentServices.Single(service => service.Name == uniqueCode);
             var order = orderRepository.GetById(id);
 
-            var form = paymentService.CreateForm(order);
+            var form = paymentService.FirstForm(order);
 
-            var webContractorService = webContractorServices.SingleOrDefault(service => service.UniqueCode == uniqueCode);
+            var webContractorService = webContractorServices.SingleOrDefault(service => service.Name == uniqueCode);
             if(webContractorService != null)            
                 return Redirect(webContractorService.GetUri);            
 
@@ -283,9 +281,9 @@ namespace Store.Presentation.Controllers
         [HttpPost]
         public IActionResult NextPayment(int id, string uniqueCode, int step, Dictionary<string, string> values)
         {
-            var paymentService = paymentServices.Single(service => service.UniqueCode == uniqueCode);
+            var paymentService = paymentServices.Single(service => service.Name == uniqueCode);
 
-            var form = paymentService.MoveNextForm(id, step, values);
+            var form = paymentService.NextForm(id, step, values);
 
             if (form.IsFinal)
             {
