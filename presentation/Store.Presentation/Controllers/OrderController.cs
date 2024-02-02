@@ -78,7 +78,10 @@ namespace Store.Presentation.Controllers
 
             var bicycle = bicycleRepos.GetByIds(bicycleId);
 
-            order.AddOrUpdateItem(bicycle, count);
+            if (order.Items.TryGet(bicycleId, out OrderItem orderItem))
+                orderItem.Count += count;
+            else
+                order.Items.Add(bicycleId, bicycle.Price, count);
 
             SaveOrderAndCart(order, cart);
 
@@ -92,7 +95,7 @@ namespace Store.Presentation.Controllers
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
-            order.GetItem(bicycleId).Count = count;
+            order.Items.Get(bicycleId).Count = count;
 
             SaveOrderAndCart(order, cart);
 
@@ -130,7 +133,7 @@ namespace Store.Presentation.Controllers
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
-            order.RemoveItem(bicycleId);
+            order.Items.Remove(bicycleId);
 
             SaveOrderAndCart(order, cart);
 
