@@ -3,6 +3,7 @@ using Store.Contractors;
 using Store.Memory;
 using Store.Messages;
 using Store.PayPalPayment;
+using Store.Web.App;
 using Store.Web.Contractors;
 
 internal class Program
@@ -13,7 +14,7 @@ internal class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
-        builder.Services.AddSingleton<IBicycleRepos, BicycleRepository>();
+        builder.Services.AddSingleton<IBicycleRepository, BicycleRepository>();
         builder.Services.AddSingleton<BicycleService>();
         builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
         builder.Services.AddSingleton<INotificationService, DebugNotificationService>();
@@ -21,6 +22,8 @@ internal class Program
         builder.Services.AddSingleton<IPaymentService, CashPaymentService>();
         builder.Services.AddSingleton<IPaymentService, PayPalPaymentService>();
         builder.Services.AddSingleton<IWebContractorService, PayPalPaymentService>();
+        builder.Services.AddSingleton<OrderService>();
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddSession(options =>
         {
@@ -49,12 +52,12 @@ internal class Program
         app.UseSession();
 
         app.MapControllerRoute(
+            name: "areas",
+            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+        app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
-        
-        app.MapAreaControllerRoute(name: "PayPal",
-                areaName: "PayPal",
-                pattern: "PayPal/{controller=Home}/{action=Index}/{id?}");        
+            pattern: "{controller=Home}/{action=Index}/{id?}");                        
 
         app.Run();
     }

@@ -1,9 +1,19 @@
-﻿@{
+﻿@using Store.PayPalPayment.Areas.PayPal.Controllers
+@using Store.PayPalPayment.Areas.PayPal.Models
+@model ExampleModel
+
+@{
     ViewData["Title"] = "PayPal";
 }
 
 <h1>PayPal</h1>
 
 <p>
-    <a href="/PayPal/Home/Callback">Pay</a>
+    Here we're emulating redirection to outside payment service PayPal.     
 </p>
+
+<form action="@Url.Action(nameof(HomeController.Callback), "Home", new { area = "PayPal" })" method="post">
+    <input type="hidden" name="orderId" value="@Model.OrderId" />
+    <input type="hidden" name="returnUri" value="@Model.ReturnUri" />
+    <button type="submit" class="btn btn-success">Pay</button>
+</form>

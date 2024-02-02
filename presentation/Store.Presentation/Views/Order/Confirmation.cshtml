@@ -1,4 +1,4 @@
-﻿@model ConfirmationModel
+﻿@model OrderModel
 
 @{
     ViewData["Title"] = "Confirmation of cellphone number";
@@ -6,24 +6,33 @@
 
 <h1>Confirmation of cellphone number</h1>
 
-<form action="@Url.Action("Confirmate")" method="post">
-    <input type="hidden" name="id" value="@Model.OrderId" />
-    <input type="hidden" name="cellPhone" value="@Model.Cellphone" />
-    <div>
-        <label for="code">Confirmation code</label>
-        <input type="text" class="form-control" name="code" placeholder="0000" />
-        @if (Model.Errors.ContainsKey("code"))
+<p>
+    Write <em>confirmation code</em> from SMS.
+</p>
+
+<form action="@Url.Action(nameof(OrderController.ConfirmCellPhone))" method="post">
+    <input type="hidden" name="cellPhone" value="@Model.CellPhone" />
+    <div class="form-group">
+        <label for="confirmationCode">Confirmation code</label>
+        <input type="text" class="form-control" name="confirmationCode" placeholder="0000" />
+        @if (Model.Errors.ContainsKey("confirmationCode"))
         {
-            <small class="form-text text-danger">@Model.Errors["code"]</small>
+            <small class="form-text text-danger">@Model.Errors["confirmationCode"]</small>
         }
     </div>
     <button type="submit" class="btn btn-outline-success">Check</button>
 </form> 
+<p>
+    If You don't recieve any SMS from us in one minute, check your number and try to send code again. 
+</p>
 <form action="@Url.Action("SendConfirmationCode")" method="post">
-    <input type="hidden" name="id" value="@Model.OrderId" />
     <div class="form-group">
         <label for="cellPhone">Cellphone number</label>
-        <input type="text" class="form-control" name="cellPhone" value="@Model.Cellphone" />
+        <input type="text" class="form-control" name="cellPhone" value="@Model.CellPhone" />
+        @if (Model.Errors.ContainsKey("cellphone"))
+        {
+            <small class="form-text text-danger">@Model.Errors["cellPhone"]</small>
+        }
     </div>
     <button type="submit" class="btn btn-success">Send code again</button>
 </form>

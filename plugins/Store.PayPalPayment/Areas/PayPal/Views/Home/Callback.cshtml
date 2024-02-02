@@ -1,9 +1,19 @@
-﻿@{
-    ViewData["Title"] = "Payment aproved";
+﻿@using Store.PayPalPayment.Areas.PayPal.Models
+@model ExampleModel
+
+@{
+    ViewData["Title"] = "Payment approved";
 }
 
-<h1>Payment aproved</h1>
+<h1>Payment approved</h1>
 
 <p>
-    <a href="@Url.Action("Finish", "Order")">Back to the store</a>
+    Payment confirmed. To finish formating, press the button<em>Next</em>.
 </p>
+
+<form action="@Model.ReturnUri" method="post">
+    <input type="hidden" name="serviceName" value="PayPal" />
+    <input type="hidden" name="step" value="1" />
+    <input type="hidden" name="values[orderId]" value="@Model.OrderId" />
+    <button type="submit" class="btn btn-success">Next</button>
+</form>

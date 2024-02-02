@@ -39,18 +39,50 @@ namespace Store.Contractors
             },
         };
 
-        public string UniqueCode => "Postomate";
+        public string Name => "Postomate";
 
         public string Title => "Nova Poshta";
 
+        public Form FirstForm(Order order)
+        {
+            return Form.CreateFirst(Name)
+                       .AddParameter("orderId", order.Id.ToString())
+                       .AddField(new SelectionField("City", "city", "1", cities));
+        }        
+
+        public Form NextForm(int step, IReadOnlyDictionary<string, string> values)
+        {
+            if (step == 1)
+            {
+                if (values["city"] == "1")
+                {
+                    return Form.CreateNext(Name, 2, values)
+                               .AddField(new SelectionField("Postomate", "postomate", "1", postomates["1"]));
+                }
+                else if (values["city"] == "2")
+                {
+                    return Form.CreateNext(Name, 2, values)
+                               .AddField(new SelectionField("Posomate", "postomate", "4", postomates["2"]));
+                }
+                else
+                    throw new InvalidOperationException("Invalid postomate city.");
+            }
+            else if (step == 2)
+            {
+                return Form.CreateLast(Name, 3, values);
+            }
+            else
+                throw new InvalidOperationException("Invalid postomate step.");
+        }
+
         public OrderDelivery GetDelivery(Form form)
         {
-            if (form.UniqueCode != UniqueCode || !form.IsFinal)
+            if (form.ServiceName != Name || !form.IsFinal)
                 throw new InvalidOperationException("Invalid form");
 
-            var cityId = form.Fields.Single(field => field.Name == "city").Value;
+            var cityId = form.Parameters["city"];
             var cityName = cities[cityId];
-            var postomateId = form.Fields.Single(field => field.Name == "postomate").Value;
+            var postomateId = form.Parameters["postomate"];
             var postomateName = postomates[cityId][postomateId];
 
             var parameters = new Dictionary<string, string>
@@ -59,59 +91,11 @@ namespace Store.Contractors
                 {nameof(cityName), cityName },
                 {nameof(postomateId), postomateId },
                 {nameof(postomateName), postomateName },
-
             };
 
             var description = $"City: {cityName}\nPostomate: {postomateName}";
 
-            return new OrderDelivery(UniqueCode, description, 10m, parameters);
-        }
-
-
-        public Form CreateForm(Order order)
-        {
-            if(order == null)
-                throw new ArgumentNullException(nameof(order));
-
-            return new Form(UniqueCode, order.Id, 1, false, new[]
-            {
-                new SelectionField("City", "city", "1", cities),
-            });
-        }
-
-        public Form MoveNextForm(int orderId, int step, IReadOnlyDictionary<string, string> values)
-        {
-            if (step == 1)
-            {
-                if (values["city"] == "1")
-                {
-                    return new Form(UniqueCode, orderId, 2, false, new Field[]
-                    {
-                        new HiddenField("City", "city", "1"),
-                        new SelectionField("Postomate", "postomate", "1", postomates["1"]),
-                    });
-                }
-                else if (values["city"] == "2")
-                {
-                    return new Form(UniqueCode, orderId, 2, false, new Field[]
-                    {
-                        new HiddenField("City", "city", "2"),
-                        new SelectionField("Postomate", "postomate", "4", postomates["2"]),
-                    });
-                }
-                else
-                    throw new InvalidOperationException("Invalid postomate city.");
-            }
-            else if (step == 2)
-            {
-                return new Form(UniqueCode, orderId, 3, true, new Field[]
-                {
-                    new HiddenField("City", "city", values["city"]),
-                    new HiddenField("Postomate", "postomate", values["postomate"]),
-                });
-            }
-            else
-                throw new InvalidOperationException("Invalid postomate step.");
-        }
+            return new OrderDelivery(Name, description, 10m, parameters);   
+        }       
     }    
 }

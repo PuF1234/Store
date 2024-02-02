@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Store.Memory
 {
-    public class BicycleRepository : IBicycleRepos
+    public class BicycleRepository : IBicycleRepository
     {
         private readonly Bicycle[] bicycles = new[]
         {

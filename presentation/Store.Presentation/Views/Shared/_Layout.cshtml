@@ -17,8 +17,8 @@
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Find!</button>
             </form>
             <span class="navbar-text m-lg-auto" >
-                @{                    
-                    if (Context.Session.TryGetCart(out Cart cart) && cart.TotalCount > 0)
+                @{
+                    if (Context.Session.TryGetCart(out Store.Web.App.Cart cart) && cart.TotalCount > 0)
                     {
                         <a href="@Url.Action("Index", "Order")">Items @cart.TotalCount for @cart.TotalPrice$</a>
                     }

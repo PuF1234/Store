@@ -17,11 +17,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Presentation", "prese
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Tests", "domain\Store.Tests\Store.Tests.csproj", "{7F6724FC-5A29-48D4-AB0F-A50E91EAC118}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Web.Contractors", "presentation\Store.Web.Contractors\Store.Web.Contractors.csproj", "{97BA7E21-8B0A-47B4-A43E-41F8E9DEB95D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Web.Contractors", "presentation\Store.Web.Contractors\Store.Web.Contractors.csproj", "{97BA7E21-8B0A-47B4-A43E-41F8E9DEB95D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "plugins", "plugins", "{16245203-90A2-4802-84BF-BC51746832F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.PayPalPayment", "plugins\Store.PayPalPayment\Store.PayPalPayment.csproj", "{F2862463-0D40-41B9-AE88-0FF49AD8C1DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.PayPalPayment", "plugins\Store.PayPalPayment\Store.PayPalPayment.csproj", "{F2862463-0D40-41B9-AE88-0FF49AD8C1DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{78F7DC58-0D0A-4308-90D6-4CEF61C9C6D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Web.App", "application\Store.Web.App\Store.Web.App.csproj", "{9DD9F444-B2CF-423C-8743-B082169FD644}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +57,10 @@ Global
 		{F2862463-0D40-41B9-AE88-0FF49AD8C1DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2862463-0D40-41B9-AE88-0FF49AD8C1DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2862463-0D40-41B9-AE88-0FF49AD8C1DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD9F444-B2CF-423C-8743-B082169FD644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD9F444-B2CF-423C-8743-B082169FD644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD9F444-B2CF-423C-8743-B082169FD644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD9F444-B2CF-423C-8743-B082169FD644}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +72,7 @@ Global
 		{7F6724FC-5A29-48D4-AB0F-A50E91EAC118} = {D67A01AE-670A-4094-A385-1D02CF16D359}
 		{97BA7E21-8B0A-47B4-A43E-41F8E9DEB95D} = {3183D68D-35AD-4148-95D2-9DED417C90F9}
 		{F2862463-0D40-41B9-AE88-0FF49AD8C1DD} = {16245203-90A2-4802-84BF-BC51746832F9}
+		{9DD9F444-B2CF-423C-8743-B082169FD644} = {78F7DC58-0D0A-4308-90D6-4CEF61C9C6D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {139430F2-5523-485B-834B-A26C92F22739}

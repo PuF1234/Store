@@ -1,20 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Store.Web.App;
 
 namespace Store.Presentation.Controllers
 {
     public class BicycleController : Controller
     {
-        private readonly IBicycleRepos bicycleRepos;
+        private readonly BicycleService bicycleService;
 
-        public BicycleController(IBicycleRepos bicycleRepos)
+        public BicycleController(BicycleService bicycleService)
         {
-            this.bicycleRepos = bicycleRepos;
+            this.bicycleService = bicycleService;
         }
         public IActionResult Index(int id)
         {
-            Bicycle bicycle = bicycleRepos.GetByIds(id);
+            var model = bicycleService.GetById(id);
 
-            return View(bicycle);
+            return View(model);
         }
     }
 }

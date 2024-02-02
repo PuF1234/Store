@@ -19,7 +19,7 @@
 
         public decimal Price { get; }
 
-        public OrderItem(int bicycleId, int count, decimal price)
+        public OrderItem(int bicycleId, decimal price, int count)
         {
             ThrowIfInvalidCount(count); 
             BicycleId = bicycleId;
