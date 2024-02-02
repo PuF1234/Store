@@ -19,7 +19,7 @@ namespace Store.PayPalPayment
 
         public string Title => "Pay by credit card";
 
-        public string GetUri => "/PayPal/";
+        public string parameters => "/PayPal/";
 
         public Form FirstForm(Order order)
         {

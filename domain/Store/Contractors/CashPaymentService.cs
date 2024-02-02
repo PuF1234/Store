@@ -21,13 +21,13 @@ namespace Store.Contractors
 
         public OrderPayment GetPayment(Form form)
         {
-            if (form.UniqueCode != Name || !form.IsFinal)
+            if (form.ServiceName != Name || !form.IsFinal)
                 throw new InvalidOperationException("Invalid payment form");
 
             return new OrderPayment(Name, "Payment with cash", new Dictionary<string, string>());
         }
 
-        public Form NextForm(int orderId, int step, IReadOnlyDictionary<string, string> values)
+        public Form NextForm(int step, IReadOnlyDictionary<string, string> values)
         {
             if (step != 1)
                 throw new InvalidOperationException("Invalid cash payment step.");

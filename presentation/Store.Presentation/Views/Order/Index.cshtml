@@ -1,4 +1,4 @@
-﻿@using Store.Web.Models
+﻿@using Store.Web.App
 @model OrderModel
 
 @{
@@ -45,11 +45,16 @@
     </tfoot>
 </table>
 
-<form action="@Url.Action("SendConfirmationCode")" method="post">
-    <input type="hidden" name="id" value="@Model.Id" />
+<p>
+    For make an order, You need to confirm your cellphone number.
+    Write your number below and press <em>Send code</em>.
+    You will recieve a SMS with *confirmation code* in it.
+</p>
+
+<form action="@Url.Action(nameof(OrderController.SendConfirmation))" method="post"> 
     <div class="form-group">
         <label for="cellPhone">Cellphone number</label>
-        <input type="text" class="form-control" name="cellPhone" value="+12345678901" />
+        <input type="text" class="form-control" name="cellPhone" placeholder="+12345678901" value="+12345678901" />
         @if (Model.Errors.ContainsKey("cellPhone"))
         {
             <small class="form-text text-danger">@Model.Errors["cellPhone"]</small>

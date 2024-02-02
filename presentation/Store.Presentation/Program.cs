@@ -22,6 +22,8 @@ internal class Program
         builder.Services.AddSingleton<IPaymentService, CashPaymentService>();
         builder.Services.AddSingleton<IPaymentService, PayPalPaymentService>();
         builder.Services.AddSingleton<IWebContractorService, PayPalPaymentService>();
+        builder.Services.AddSingleton<OrderService>();
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddSession(options =>
         {
@@ -50,12 +52,12 @@ internal class Program
         app.UseSession();
 
         app.MapControllerRoute(
+            name: "areas",
+            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+        app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
-        
-        app.MapAreaControllerRoute(name: "PayPal",
-                areaName: "PayPal",
-                pattern: "PayPal/{controller=Home}/{action=Index}/{id?}");        
+            pattern: "{controller=Home}/{action=Index}/{id?}");                        
 
         app.Run();
     }

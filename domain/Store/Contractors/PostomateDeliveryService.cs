@@ -81,7 +81,7 @@ namespace Store.Contractors
                 throw new InvalidOperationException("Invalid form");
 
             var cityId = form.Parameters["city"];
-            var cityName = form.Parameters[cityId];
+            var cityName = cities[cityId];
             var postomateId = form.Parameters["postomate"];
             var postomateName = postomates[cityId][postomateId];
 
