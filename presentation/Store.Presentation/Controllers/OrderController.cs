@@ -2,21 +2,24 @@
 using Store.Contractors;
 using Store.Messages;
 using Store.Presentation.Models;
+using Store.Web;
+using Store.Web.App;
 using Store.Web.Contractors;
+using Store.Web.Models;
 using System.Text.RegularExpressions;
 
 namespace Store.Presentation.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly IBicycleRepos bicycleRepos;
+        private readonly IBicycleRepository bicycleRepos;
         private readonly IOrderRepository orderRepository;
         private readonly INotificationService notificationService;
         private readonly IEnumerable<IDeliveryService> deliveryServices;
         private readonly IEnumerable<IWebContractorService> webContractorServices;
         private readonly IEnumerable<IPaymentService> paymentServices;
 
-        public OrderController(IBicycleRepos bicycleRepos, 
+        public OrderController(IBicycleRepository bicycleRepos, 
                               IOrderRepository orderRepository,
                               IEnumerable<IDeliveryService> deliveryServices,    
                               IEnumerable<IPaymentService> paymentServices,
@@ -106,8 +109,7 @@ namespace Store.Presentation.Controllers
         private void SaveOrderAndCart(Order order, Cart cart)
         {
             orderRepository.Update(order);
-            cart.TotalCount = order.TotalCount;
-            cart.TotalPrice = order.TotalPrice;
+            cart = new Cart(order.Id, order.TotalCount, order.TotalPrice);
             HttpContext.Session.Set(cart);
         }
 
@@ -123,7 +125,7 @@ namespace Store.Presentation.Controllers
             else
             {
                 order = orderRepository.Create();
-                cart = new Cart(order.Id);
+                cart = new Cart(order.Id, 0, 0m);
             }
             return (order, cart);
         }

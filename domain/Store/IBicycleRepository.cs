@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Store
 {
-    public interface IBicycleRepos
+    public interface IBicycleRepository
     {
         Bicycle[] GetAllByIds(IEnumerable<int> bicycleIds);
         Bicycle[] GetAllBySerialNumber(string serialNumber);

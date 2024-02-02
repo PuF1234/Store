@@ -1,4 +1,4 @@
-﻿namespace Store.Presentation.Models
+﻿namespace Store.Web.Models
 {
     public class OrderItemModel
     {

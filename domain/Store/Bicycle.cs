@@ -28,7 +28,7 @@ namespace Store
 
         }
 
-        internal static bool IsSerial(string s)
+        public static bool IsSerial(string s)
         {
 
             if(s is null)
