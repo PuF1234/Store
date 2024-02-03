@@ -1,6 +1,5 @@
 using Store;
 using Store.Contractors;
-using Store.Memory;
 using Store.Messages;
 using Store.PayPalPayment;
 using Store.Web.App;
@@ -14,9 +13,7 @@ internal class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
-        builder.Services.AddSingleton<IBicycleRepository, BicycleRepository>();
         builder.Services.AddSingleton<BicycleService>();
-        builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
         builder.Services.AddSingleton<INotificationService, DebugNotificationService>();
         builder.Services.AddSingleton<IDeliveryService, PostomateDeliveryService>();
         builder.Services.AddSingleton<IPaymentService, CashPaymentService>();
