@@ -1,9 +1,11 @@
 using Store;
+using Store.Data.EF;
 using Store.Contractors;
 using Store.Messages;
 using Store.PayPalPayment;
 using Store.Web.App;
 using Store.Web.Contractors;
+using System.Configuration;
 
 internal class Program
 {
@@ -12,6 +14,9 @@ internal class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+        builder.Services.AddEfRepositories(builder.Configuration.GetConnectionString("Store"));
+
+
         builder.Services.AddControllersWithViews();
         builder.Services.AddSingleton<BicycleService>();
         builder.Services.AddSingleton<INotificationService, DebugNotificationService>();
