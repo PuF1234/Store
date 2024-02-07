@@ -33,7 +33,7 @@ namespace Store.Web.App
             return new BicycleModel
             {
                 Id = bicycle.ID,
-                SerialNumber = bicycle.Serial_number,
+                SerialNumber = bicycle.Serial_Number,
                 Title = bicycle.Title,
                 Producer = bicycle.Producer,
                 Description = bicycle.Description,

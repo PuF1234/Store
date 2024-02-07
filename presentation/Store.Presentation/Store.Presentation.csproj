@@ -9,12 +9,16 @@
   <ItemGroup>
     <ProjectReference Include="..\..\application\Store.Web.App\Store.Web.App.csproj" />
     <ProjectReference Include="..\..\domain\Store\Store.csproj" />
-    <ProjectReference Include="..\..\infrastructure\Store.Memory\Store.Memory.csproj" />
+    <ProjectReference Include="..\..\infrastructure\Store.Data.EF\Store.Data.EF.csproj" />
     <ProjectReference Include="..\..\plugins\Store.PayPalPayment\Store.PayPalPayment.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
   </ItemGroup>
 

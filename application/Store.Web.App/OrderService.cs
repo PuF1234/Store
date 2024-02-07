@@ -102,6 +102,8 @@ namespace Store.Web.App
                 orderItem.Count += count;
             else
                 order.Items.Add(Bicycle.ID, Bicycle.Price, count);
+
+            orderRepository.Update(order);
         }
 
         internal void UpdateSession(Order order)

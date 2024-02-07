@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Store.Data;
+using System;
 using Xunit;
 
 namespace Store.Tests
@@ -11,22 +12,24 @@ namespace Store.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 int count = 0;
-                new OrderItem(1, 200m, count);
+                OrderItem.DtoFactory.Create(new OrderDto(), 1, 200m, count);
             });
         }
+
         [Fact]
         public void OrderItem_WithNegativeCount_ThrowArgumentOutOfRangeExcection()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 int count = -1;
-                new OrderItem(1, 200m, count);
+                OrderItem.DtoFactory.Create(new OrderDto(), 1, 200m, count);
             });
         }
+
         [Fact]
         public void OrderItem_WithPositiveCount_SetsCount()
         {
-            var orderItem = new OrderItem(1, 3m, 2);
+            var orderItem = OrderItem.DtoFactory.Create(new OrderDto(), 1, 3m, 2);
 
             Assert.Equal(1, orderItem.BicycleId);
             Assert.Equal(2, orderItem.Count);
@@ -36,7 +39,8 @@ namespace Store.Tests
         [Fact]
         public void Count_WithNegativeNumber_ThrowArgumentOutOfRangeException()
         {
-            var orderItem = new OrderItem(0, 0m, 5);
+                var orderItemDto = OrderItem.DtoFactory.Create(new OrderDto(), 0, 10m, 1);
+                var orderItem = OrderItem.Mapper.Map(orderItemDto);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -48,7 +52,8 @@ namespace Store.Tests
         [Fact]
         public void Count_WithZeroValue_ThrowArgumentOutOfRangeException()
         {
-            var orderItem = new OrderItem(0, 0m, 5);
+            var orderItemDto = OrderItem.DtoFactory.Create(new OrderDto(), 0, 10m, 30);
+            var orderItem = OrderItem.Mapper.Map(orderItemDto);
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -60,7 +65,8 @@ namespace Store.Tests
         [Fact]
         public void Count_WithPositiveNumber_SetsValue()
         {
-            var orderItem = new OrderItem(0, 0m, 5);
+            var orderItemDto = OrderItem.DtoFactory.Create(new OrderDto(), 0, 10m, 30);
+            var orderItem = OrderItem.Mapper.Map(orderItemDto); 
 
             orderItem.Count = 10;
 
