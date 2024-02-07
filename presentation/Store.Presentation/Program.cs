@@ -6,6 +6,7 @@ using Store.PayPalPayment;
 using Store.Web.App;
 using Store.Web.Contractors;
 using System.Configuration;
+using Store.Presentation;
 
 internal class Program
 {
@@ -17,7 +18,10 @@ internal class Program
         builder.Services.AddEfRepositories(builder.Configuration.GetConnectionString("Store"));
 
 
-        builder.Services.AddControllersWithViews();
+        builder.Services.AddControllersWithViews(options =>
+        {
+            options.Filters.Add(typeof(ExceptionFilter));   
+        });
         builder.Services.AddSingleton<BicycleService>();
         builder.Services.AddSingleton<INotificationService, DebugNotificationService>();
         builder.Services.AddSingleton<IDeliveryService, PostomateDeliveryService>();
@@ -37,7 +41,12 @@ internal class Program
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
-        if (!app.Environment.IsDevelopment())
+
+        //if (!app.Environment.IsDevelopment())
+        if (false)
+            app.UseDeveloperExceptionPage();
+            
+        else
         {
             app.UseExceptionHandler("/Home/Error");
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
