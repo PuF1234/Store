@@ -105,7 +105,6 @@ namespace Store.Data.EF.Migrations
                         .HasColumnType("money");
 
                     b.Property<string>("DeliveryUniqueCode")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
@@ -113,7 +112,6 @@ namespace Store.Data.EF.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentServiceName")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 

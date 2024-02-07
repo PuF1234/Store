@@ -6,7 +6,7 @@
 
         public string? CellPhone { get; set; }
 
-        public string DeliveryUniqueCode { get; set; }
+        public string? DeliveryUniqueCode { get; set; }
 
         public string? DeliveryDescription { get; set; }
 
@@ -14,7 +14,7 @@
 
         public Dictionary<string, string>? DeliveryParameters { get; set; }
 
-        public string PaymentServiceName { get; set; }
+        public string? PaymentServiceName { get; set; }
 
         public string? PaymqntDescription { get; set; }
 

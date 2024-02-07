@@ -17,7 +17,7 @@ namespace Store.Data.EF.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP FULLTEXT INDEX ON Bicycles", suppressTransaction: true);
+            migrationBuilder.Sql("DROP FULLTEXT INDEX ON Bicycle", suppressTransaction: true);
             migrationBuilder.Sql("DROP FULLTEXT CATALOG StoreFullTextCatalog", suppressTransaction: true);
         }
     }

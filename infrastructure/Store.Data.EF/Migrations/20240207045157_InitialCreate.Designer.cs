@@ -11,7 +11,7 @@ using Store.Data.EF;
 namespace Store.Data.EF.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20240207042323_InitialCreate")]
+    [Migration("20240207045157_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -108,7 +108,6 @@ namespace Store.Data.EF.Migrations
                         .HasColumnType("money");
 
                     b.Property<string>("DeliveryUniqueCode")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
@@ -116,7 +115,6 @@ namespace Store.Data.EF.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentServiceName")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
