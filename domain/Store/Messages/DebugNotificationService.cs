@@ -11,6 +11,13 @@ namespace Store.Messages
             Debug.WriteLine("Cellphone: {0}, code: {1:0000}.", cellPhone, code);
         }
 
+        public Task SendConfirmationCodeAsync(string cellPhone, int code)
+        {
+            Debug.WriteLine("Cell phone: {0}, code: {1:0000}.", cellPhone, code);
+
+            return Task.CompletedTask;
+        }
+
         public void StartProcess(Order order)
         {
             using (var client = new SmtpClient())
@@ -24,9 +31,20 @@ namespace Store.Messages
                 { 
                     builder.Append("{0}, {1}", item.BicycleId, item.Count);
                     s += string.Format("0{}");
+
                     builder.AppendLine();
                 }
+
+                message.Body = builder.ToString();
+                client.Send(message);
             }
+        }
+
+        public Task StartProcessAsync(Order order)
+        {
+            StartProcess(order);
+
+            return Task.CompletedTask;
         }
     }
 }

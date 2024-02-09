@@ -25,7 +25,7 @@
 <p>
     If You don't recieve any SMS from us in one minute, check your number and try to send code again. 
 </p>
-<form action="@Url.Action("SendConfirmationCode")" method="post">
+<form action="@Url.Action("SendConfirmationCodeAsync")" method="post">
     <div class="form-group">
         <label for="cellPhone">Cellphone number</label>
         <input type="text" class="form-control" name="cellPhone" value="@Model.CellPhone" />

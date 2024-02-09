@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PhoneNumbers;
 using Store.Messages;
+using System.Net;
+using System.Reflection;
 
 namespace Store.Web.App
 {
@@ -24,33 +26,29 @@ namespace Store.Web.App
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public bool TryGetModel(out OrderModel model)
+        public async Task<(bool hasValue, OrderModel model)> TryGetModelAsync()
         {
-            if (TryGetOrder(out Order order))
-            {
-                model = Map(order);
-                return true;
-            }
+            var (hasValue, order) = await TryGetOrderAsync();
+            if (hasValue)
+                return (true, await MapAsync(order));
 
-            model = null;
-            return false;
+            return (false, null);
         }
 
-        internal bool TryGetOrder(out Order order)
+        internal async Task<(bool hasValue, Order order)> TryGetOrderAsync()    
         {
             if (Session.TryGetCart(out Cart cart))
             {
-                order = orderRepository.GetById(cart.OrderId);
-                return true;
+                var order = await orderRepository.GetByIdAsync(cart.OrderId);
+                return (true, order);
             }
 
-            order = null;
-            return false;
+            return (false, null);
         }
 
-        internal OrderModel Map(Order order)
+        internal async Task<OrderModel> MapAsync(Order order)
         {
-            var Bicycles = GetBicycles(order);
+            var Bicycles = await GetBicyclesAsync(order);
             var items = from item in order.Items
                         join Bicycle in Bicycles on item.BicycleId equals Bicycle.ID
                         select new OrderItemModel
@@ -74,36 +72,37 @@ namespace Store.Web.App
             };
         }
 
-        internal IEnumerable<Bicycle> GetBicycles(Order order)
+        internal async Task<IEnumerable<Bicycle>> GetBicyclesAsync(Order order)
         {
             var BicycleIds = order.Items.Select(item => item.BicycleId);
 
-            return bicycleRepository.GetAllByIds(BicycleIds);
+            return await bicycleRepository.GetAllByIdsAsync(BicycleIds);
         }
 
-        public OrderModel AddBicycle(int BicycleId, int count)
+        public async Task<OrderModel> AddBicycleAsync(int bicycleId, int count)
         {
             if (count < 1)
                 throw new InvalidOperationException("Too few Bicycles to add");
 
-            if (!TryGetOrder(out Order order))
-                order = orderRepository.Create();
+            var (hasValue, order) = await TryGetOrderAsync();
 
-            AddOrUpdateBicycle(order, BicycleId, count);
-            UpdateSession(order);
+            if (!hasValue)
+                order = await orderRepository.CreateAsync();
 
-            return Map(order);
+            await AddOrUpdateBicycleAsync(order, bicycleId, count); UpdateSession(order);
+
+            return await MapAsync(order);
         }
 
-        internal void AddOrUpdateBicycle(Order order, int BicycleId, int count)
+        internal async Task AddOrUpdateBicycleAsync(Order order, int bicycleId, int count)
         {
-            var Bicycle = bicycleRepository.GetByIds(BicycleId);
-            if (order.Items.TryGet(BicycleId, out OrderItem orderItem))
+            var bicycle = await bicycleRepository.GetByIdAsync(bicycleId);
+            if (order.Items.TryGet(bicycleId, out OrderItem orderItem))
                 orderItem.Count += count;
             else
-                order.Items.Add(Bicycle.ID, Bicycle.Price, count);
+                order.Items.Add(bicycle.ID, bicycle.Price, count);
 
-            orderRepository.Update(order);
+            await orderRepository.UpdateAsync(order);
         }
 
         internal void UpdateSession(Order order)
@@ -112,47 +111,49 @@ namespace Store.Web.App
             Session.Set(cart);
         }
 
-        public OrderModel UpdateBicycle(int BicycleId, int count)
+        public async Task<OrderModel> UpdateBicycleAsync(int BicycleId, int count)
         {
-            var order = GetOrder();
+            var order = await GetOrderAsync();
             order.Items.Get(BicycleId).Count = count;
 
-            orderRepository.Update(order);
+            await orderRepository.UpdateAsync(order);
             UpdateSession(order);
 
-            return Map(order);
+            return await MapAsync(order);
         }
 
-        public OrderModel RemoveBicycle(int BicycleId)
+        public async Task<OrderModel> RemoveBicycleAsync(int BicycleId)
         {
-            var order = GetOrder();
+            var order = await GetOrderAsync();
             order.Items.Remove(BicycleId);
 
-            orderRepository.Update(order);
+            await orderRepository.UpdateAsync(order);
             UpdateSession(order);
 
-            return Map(order);
+            return await MapAsync(order);
         }
 
-        public Order GetOrder()
+        public async Task<Order> GetOrderAsync()
         {
-            if (TryGetOrder(out Order order))
+            var (hasValue, order) = await TryGetOrderAsync();
+
+            if (hasValue)
                 return order;
 
             throw new InvalidOperationException("Empty session.");
         }
 
-        public OrderModel SendConfirmation(string cellPhone)
+        public async Task<OrderModel> SendConfirmationAsync(string cellPhone)
         {
-            var order = GetOrder();
-            var model = Map(order);
+            var order = await GetOrderAsync();
+            var model = await MapAsync(order);
 
             if (TryFormatPhone(cellPhone, out string formattedPhone))
             {
                 var confirmationCode = 1111; // todo: random.Next(1000, 10000) = 1000, 1001, ..., 9998, 9999
                 model.CellPhone = formattedPhone;
                 Session.SetInt32(formattedPhone, confirmationCode);
-                notificationService.SendConfirmationCode(formattedPhone, confirmationCode);
+                await notificationService.SendConfirmationCodeAsync(formattedPhone, confirmationCode);
             }
             else
                 model.Errors["cellPhone"] = "Номер телефона не соответствует формату +79876543210";
@@ -177,51 +178,51 @@ namespace Store.Web.App
             }
         }
 
-        public OrderModel ConfirmCellPhone(string cellPhone, int confirmationCode)
+        public async Task<OrderModel> ConfirmCellPhoneAsync(string cellPhone, int confirmationCode)
         {
             int? storedCode = Session.GetInt32(cellPhone);
             var model = new OrderModel();
 
             if (storedCode == null)
             {
-                model.Errors["cellPhone"] = "Что-то случилось. Попробуйте получить код ещё раз.";
+                model.Errors["cellPhone"] = "Something goes wrong. Try again.";
                 return model;
             }
 
             if (storedCode != confirmationCode)
             {
-                model.Errors["confirmationCode"] = "Неверный код. Проверьте и попробуйте ещё раз.";
+                model.Errors["confirmationCode"] = "Wrong code. Check it and try again.";
                 return model;
             }
 
-            var order = GetOrder();
+            var order = await GetOrderAsync();
             order.CellPhone = cellPhone;
-            orderRepository.Update(order);
+            await orderRepository.UpdateAsync(order);
 
             Session.Remove(cellPhone);
 
-            return Map(order);
+            return await MapAsync(order);
         }
 
-        public OrderModel SetDelivery(OrderDelivery delivery)
+        public async Task<OrderModel> SetDeliveryAsync(OrderDelivery delivery)
         {
-            var order = GetOrder();
+            var order = await GetOrderAsync();
             order.Delivery = delivery;
-            orderRepository.Update(order);
+            await orderRepository.UpdateAsync(order);
 
-            return Map(order);
+            return await MapAsync(order);
         }
 
-        public OrderModel SetPayment(OrderPayment payment)
+        public async Task<OrderModel> SetPaymentAsync(OrderPayment payment)
         {
-            var order = GetOrder();
+            var order = await GetOrderAsync();
             order.Payment = payment;
-            orderRepository.Update(order);
+            await orderRepository.UpdateAsync(order);
             Session.RemoveCart();
 
-            notificationService.StartProcess(order);
+            await notificationService.StartProcessAsync(order);
 
-            return Map(order);
+            return await MapAsync(order);
         }
     }
 }

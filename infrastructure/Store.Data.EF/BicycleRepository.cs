@@ -17,52 +17,55 @@ namespace Store.Data.EF
             this.dbContextFactory = dbContextFactory;
         }
 
-        public Bicycle[] GetAllByIds(IEnumerable<int> bicycleIds)
+        public async Task<Bicycle[]> GetAllByIdsAsync(IEnumerable<int> bicycleIds)
         {
             var dbContext = dbContextFactory.Create(typeof(BicycleRepository));
 
-            return dbContext.Bicycles
+            var dtos = await dbContext.Bicycles
                             .Where(bicycle => bicycleIds.Contains(bicycle.ID))
-                            .AsEnumerable()
-                            .Select(Bicycle.Mapper.Map)
-                            .ToArray();
+                            .ToArrayAsync();
+                            
+
+            return dtos.Select(Bicycle.Mapper.Map).ToArray();
         }
 
-        public Bicycle[] GetAllBySerialNumber(string serialNumber)
+        public async Task<Bicycle[]> GetAllBySerialNumberAsync(string serialNumber)
         {
             var dbContext = dbContextFactory.Create(typeof(BicycleRepository));
 
             if (Bicycle.TryFormatSerialNumber(serialNumber, out string formattedSerialNumber))
             {
-                return dbContext.Bicycles
-                                .Where(bicycle => bicycle.Serial_number == formattedSerialNumber)
-                                .AsEnumerable()
-                                .Select(Bicycle.Mapper.Map)
-                                .ToArray();
+                var dtos = await dbContext.Bicycles
+                                          .Where(book => book.Serial_number == formattedSerialNumber)
+                                          .ToArrayAsync();
+
+                return dtos.Select(Bicycle.Mapper.Map)
+                           .ToArray();
             }
 
             return new Bicycle[0];
         }
 
-        public Bicycle[] GetAllByTitleOrProducer(string titleOrProducer)
+        public async Task<Bicycle[]> GetAllByTitleOrProducerAsync(string titleOrProducer)
         {
             var dbContext = dbContextFactory.Create(typeof(BicycleRepository));
 
             var parameter = new SqlParameter("@titleOrProducer", titleOrProducer);
-            return dbContext.Bicycles
-                            .FromSqlRaw("SELECT * FROM Bicycles WHERE CONTAINS((Producer, Title), @titleOrProducer)",
-                                        parameter)
-                            .AsEnumerable()
-                            .Select(Bicycle.Mapper.Map)
-                            .ToArray();
+            var dtos = await dbContext.Bicycles
+                                      .FromSqlRaw("SELECT * FROM Books WHERE CONTAINS((Producer, Title), @titleOrProducer)",
+                                                  parameter)
+                                      .ToArrayAsync();
+
+            return dtos.Select(Bicycle.Mapper.Map)
+                       .ToArray();
         }
 
-        public Bicycle GetByIds(int id)
+        public async Task<Bicycle> GetByIdAsync(int id)
         {
             var dbContext = dbContextFactory.Create(typeof(BicycleRepository));
 
-            var dto = dbContext.Bicycles
-                               .Single(bicycle => bicycle.ID == id);
+            var dto = await dbContext.Bicycles
+                               .SingleAsync(bicycle => bicycle.ID == id);
 
             return Bicycle.Mapper.Map(dto);
         }
