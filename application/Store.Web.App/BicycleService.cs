@@ -11,18 +11,18 @@ namespace Store.Web.App
             this.bicycleRepository = bicycleRepository;
         }
 
-        public BicycleModel GetById(int id)
+        public async Task<BicycleModel> GetByIdAsync(int id)
         {
-            var bicycle = bicycleRepository.GetByIds(id);
+            var bicycle = await bicycleRepository.GetByIdAsync(id);
 
             return Map(bicycle);
         }
 
-        public IReadOnlyCollection<BicycleModel> GetAllByQuery(string query)
+        public async Task<IReadOnlyCollection<BicycleModel>> GetAllByQueryAsync(string query)
         {
             var bicycles = Bicycle.IsSerial(query)
-                      ? bicycleRepository.GetAllBySerialNumber(query)
-                      : bicycleRepository.GetAllByTitleOrProducer(query);
+                      ? await bicycleRepository.GetAllBySerialNumberAsync(query)
+                      : await bicycleRepository.GetAllByTitleOrProducerAsync(query);
 
             return bicycles.Select(Map)
                            .ToArray();

@@ -11,9 +11,9 @@ namespace Store.Presentation.Controllers
         {
             this.bicycleService = bicycleService;
         }
-        public IActionResult Index(int id)
+        public async Task<IActionResult> Index(int id)
         {
-            var model = bicycleService.GetById(id);
+            var model = await bicycleService.GetByIdAsync(id);
 
             return View(model);
         }

@@ -11,9 +11,9 @@ namespace Store.Presentation.Controllers
             this.bicycleService = bicycleService;
         }
 
-        public IActionResult Index(string query)
+        public async Task<IActionResult> Index(string query)
         {
-            var bicycles = bicycleService.GetAllByQuery(query);
+            var bicycles = await bicycleService.GetAllByQueryAsync(query);
 
             return View("Index",bicycles);
         }
