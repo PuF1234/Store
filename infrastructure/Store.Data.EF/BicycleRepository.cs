@@ -52,7 +52,7 @@ namespace Store.Data.EF
 
             var parameter = new SqlParameter("@titleOrProducer", titleOrProducer);
             var dtos = await dbContext.Bicycles
-                                      .FromSqlRaw("SELECT * FROM Books WHERE CONTAINS((Producer, Title), @titleOrProducer)",
+                                      .FromSqlRaw("SELECT * FROM Bicycles WHERE CONTAINS((Producer, Title), @titleOrProducer)",
                                                   parameter)
                                       .ToArrayAsync();
 

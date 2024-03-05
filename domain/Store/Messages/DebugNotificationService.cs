@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net.Mail;
 using System.Text;
+using System.Threading;
 
 namespace Store.Messages
 {
@@ -20,24 +21,9 @@ namespace Store.Messages
 
         public void StartProcess(Order order)
         {
-            using (var client = new SmtpClient())
-            {
-                var message = new MailMessage("from@at.my.domain", "to@at.my.domain");
-                message.Subject = "Order #" + order.Id;
-
-                var builder = new StringBuilder();
-                var s = "";
-                foreach(var item in order.Items) 
-                { 
-                    builder.Append("{0}, {1}", item.BicycleId, item.Count);
-                    s += string.Format("0{}");
-
-                    builder.AppendLine();
-                }
-
-                message.Body = builder.ToString();
-                client.Send(message);
-            }
+            Debug.WriteLine("Order ID {0}", order.Id);
+            Debug.WriteLine("Delivery: {0}", (object)order.Delivery.Description);
+            Debug.WriteLine("Payment: {0}", (object)order.Payment.Description);
         }
 
         public Task StartProcessAsync(Order order)
