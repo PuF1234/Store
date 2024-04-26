@@ -36,7 +36,7 @@ namespace Store.Data.EF
             if (Bicycle.TryFormatSerialNumber(serialNumber, out string formattedSerialNumber))
             {
                 var dtos = await dbContext.Bicycles
-                                          .Where(book => book.Serial_number == formattedSerialNumber)
+                                          .Where(bicycle => bicycle.Serial_number == formattedSerialNumber)
                                           .ToArrayAsync();
 
                 return dtos.Select(Bicycle.Mapper.Map)
