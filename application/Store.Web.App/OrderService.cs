@@ -156,7 +156,7 @@ namespace Store.Web.App
                 await notificationService.SendConfirmationCodeAsync(formattedPhone, confirmationCode);
             }
             else
-                model.Errors["cellPhone"] = "Номер телефона не соответствует формату +79876543210";
+                model.Errors["cellPhone"] = "Phone number doesn't match with format +12345678901";
 
             return model;
         }
@@ -167,7 +167,7 @@ namespace Store.Web.App
         {
             try
             {
-                var phoneNumber = phoneNumberUtil.Parse(cellPhone, "ru");
+                var phoneNumber = phoneNumberUtil.Parse(cellPhone, "sk");
                 formattedPhone = phoneNumberUtil.Format(phoneNumber, PhoneNumberFormat.INTERNATIONAL);
                 return true;
             }
